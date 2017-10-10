@@ -1,3 +1,4 @@
+from getpass import getuser
 from datetime import (
     timedelta as Timedelta, datetime as Datetime, tzinfo, date, time)
 from warnings import warn
@@ -1051,6 +1052,15 @@ IDLE_IN_FAILED_TRANSACTION = b("E")
 arr_trans = dict(zip(map(ord, u("[] 'u")), list(u('{}')) + [None] * 3))
 
 
+def _getuser():
+    # ``getuser()`` on w32 can raise ``ImportError``
+    # due to absent of ``pwd`` module.
+    try:
+        return getuser()
+    except ImportError:
+        return None
+
+
 class Connection(object):
 
     # DBAPI Extension: supply exceptions as attributes on the connection
@@ -1081,6 +1091,9 @@ class Connection(object):
         self.notifications = deque(maxlen=100)
         self.notices = deque(maxlen=100)
         self.parameter_statuses = deque(maxlen=100)
+
+        if user is None and host is None and unix_sock is not None:
+            user = _getuser()
 
         if user is None:
             raise InterfaceError(

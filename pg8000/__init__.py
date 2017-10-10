@@ -41,7 +41,7 @@ __author__ = "Mathieu Fenniak"
 
 
 def connect(
-        user, host='localhost', unix_sock=None, port=5432, database=None,
+        user=None, host='localhost', unix_sock=None, port=5432, database=None,
         password=None, ssl=False, timeout=None, application_name=None):
     """Creates a connection to a PostgreSQL database.
 
@@ -51,6 +51,10 @@ def connect(
 
     :param user:
         The username to connect to the PostgreSQL server with.
+
+        Can be None if ``host`` is None and ``unix_sock`` is not None;
+        in that case ``user`` will be assumed the current OS user
+        as returned by `getpass.getuser()`.
 
         If your server character encoding is not ``ascii`` or ``utf8``, then
         you need to provide ``user`` as bytes, eg.
