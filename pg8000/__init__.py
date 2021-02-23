@@ -46,7 +46,7 @@ __author__ = "Mathieu Fenniak"
 
 
 def connect(
-        user, host='localhost', database=None, port=5432, password=None,
+        user=None, host='localhost', database=None, port=5432, password=None,
         source_address=None, unix_sock=None, ssl_context=None, timeout=None,
         tcp_keepalive=True, application_name=None, replication=None):
 

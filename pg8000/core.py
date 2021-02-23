@@ -3,6 +3,7 @@ from collections import defaultdict, deque
 from datetime import datetime as Datetime
 from decimal import Decimal
 from distutils.version import LooseVersion
+from getpass import getuser
 from hashlib import md5
 from itertools import count
 from struct import Struct
@@ -135,6 +136,15 @@ IDLE_IN_TRANSACTION = b"T"
 IDLE_IN_FAILED_TRANSACTION = b"E"
 
 
+def _getuser():
+    # ``getuser()`` on w32 can raise ``ImportError``
+    # due to absent of ``pwd`` module.
+    try:
+        return getuser()
+    except ImportError:
+        return None
+
+
 class CoreConnection():
     def __enter__(self):
         return self
@@ -154,6 +164,9 @@ class CoreConnection():
         self.notifications = deque(maxlen=100)
         self.notices = deque(maxlen=100)
         self.parameter_statuses = deque(maxlen=100)
+
+        if user is None and host is None and unix_sock is not None:
+            user = _getuser()
 
         if user is None:
             raise InterfaceError(
